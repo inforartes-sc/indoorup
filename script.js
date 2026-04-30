@@ -163,7 +163,9 @@ async function applyAdminConfig() {
         heroBtns[1].innerText = data['hero-btn2-text'];
     }
     const heroImg = document.querySelector('.hero-bg img');
-    if (heroImg && data['hero-bg']) heroImg.src = data['hero-bg'];
+    if (heroImg && data['hero-bg']) {
+        heroImg.src = data['hero-bg'];
+    }
 
     const aboutSection = document.querySelector('#sobre');
     if (aboutSection) {
@@ -171,7 +173,7 @@ async function applyAdminConfig() {
         if (p2) p2.innerText = data['about-p2'];
     }
 
-    if (data['stats-bg']) {
+    if (data['stats-bg'] && data['stats-bg'].trim() !== '') {
         document.querySelectorAll('.stats-section').forEach(section => {
             section.style.backgroundImage = `linear-gradient(rgba(1, 8, 18, 0.85), rgba(1, 8, 18, 0.85)), url(${data['stats-bg']})`;
         });
