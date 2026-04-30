@@ -419,16 +419,9 @@ async function saveData() {
     // Stats Background
     data['stats-bg'] = document.querySelector('#preview-stats-bg img')?.src || '';
 
-    // Verifica o peso total dos dados (Aumentando limite para o máximo do Firestore)
+    // Peso total do payload para log informativo
     const payloadSize = JSON.stringify(data).length;
     console.log(`Peso total do salvamento: ${(payloadSize / 1024).toFixed(2)} KB`);
-
-    if (payloadSize > 1040000) { // Próximo ao limite real de 1MB
-        alert("Erro Crítico: O banco de dados do Firebase atingiu o limite máximo absoluto (1MB). A migração para o Supabase é necessária imediatamente para continuar salvando.");
-        btn.innerHTML = '<i class="fas fa-save"></i> Limite Excedido';
-        btn.disabled = false;
-        return;
-    }
 
     try {
         // Salva no Supabase (Upsert insere ou atualiza)
