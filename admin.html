@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndoorUP | Admin Total Control</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script>
+        // Bloqueio de acesso imediato se não estiver logado
+        async function checkAuth() {
+            const { data: { session } } = await window.supabase.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html';
+            }
+        }
+        checkAuth();
+    </script>
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">Indoor<span>UP</span></div>
+                <p>Painel de Controle</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#geral" class="nav-item active" data-tab="geral"><i class="fas fa-cog"></i> Geral & SEO</a>
+                <a href="#hero" class="nav-item" data-tab="hero"><i class="fas fa-rocket"></i> Hero Section</a>
+                <a href="#sobre" class="nav-item" data-tab="sobre"><i class="fas fa-info-circle"></i> Sobre Nós</a>
+                <a href="#stats" class="nav-item" data-tab="stats"><i class="fas fa-chart-line"></i> Estatísticas</a>
+                <a href="#pq-investir" class="nav-item" data-tab="pq-investir"><i class="fas fa-lightbulb"></i> Por que Investir</a>
+                <a href="#rede" class="nav-item" data-tab="rede"><i class="fas fa-map-marker-alt"></i> Locais da Rede</a>
+                <a href="#modelos" class="nav-item" data-tab="modelos"><i class="fas fa-layer-group"></i> Modelos de Contratação</a>
+                <a href="#galeria" class="nav-item" data-tab="galeria"><i class="fas fa-images"></i> Galeria (Carrosséis)</a>
+                <a href="#planos" class="nav-item" data-tab="planos"><i class="fas fa-tags"></i> Planos & Preços</a>
+                <a href="#contato" class="nav-item" data-tab="contato"><i class="fas fa-phone"></i> Contato & Redes</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="index.html" class="btn-view-site" target="_blank"><i class="fas fa-external-link-alt"></i> Ver Site</a>
+                <button id="btn-logout" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Sair</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="menu-toggle-admin" id="menu-toggle-admin">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <h1>Controle Total</h1>
+                <div class="user-info">
+                    <span>Administrador</span>
+                    <div class="avatar">A</div>
+                </div>
+            </header>
+
+            <div id="status-msg" class="status-msg">Alterações salvas com sucesso!</div>
+
+            <div class="content-body">
+                
+                <!-- Geral & SEO -->
+                <section id="tab-geral" class="tab-content active">
+                    <h2>Geral & SEO</h2>
+                    <div class="card-form">
+                        <div class="form-group">
+                            <label>Título da Aba (Browser)</label>
+                            <input type="text" id="seo-title">
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição SEO (Meta Description)</label>
+                            <textarea id="seo-desc" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Telefone WhatsApp (Apenas números com DDD)</label>
+                            <input type="text" id="whatsapp-number" placeholder="Ex: 96981306171">
+                        </div>
+                        <div class="form-group">
+                            <label>Mensagem Padrão (Início do Chat)</label>
+                            <input type="text" id="whatsapp-msg" placeholder="Olá! Gostaria de saber mais...">
+                        </div>
+                        <div class="form-group">
+                            <label>Texto da Logo (Destaque Azul)</label>
+                            <input type="text" id="logo-span">
+                        </div>
+                        <div class="form-group">
+                            <label>Logo (Imagem) <small style="color: var(--primary);">[Substitui o texto acima]</small></label>
+                            <div id="preview-logo" class="image-single-preview" style="height: 80px; margin-bottom: 10px;"></div>
+                            <input type="file" id="file-logo" accept="image/*" style="display: none;" onchange="handleSingleUpload('logo')">
+                            <button type="button" class="btn-add" onclick="document.getElementById('file-logo').click()"><i class="fas fa-upload"></i> Upload de Logo</button>
+                            <input type="hidden" id="logo-img">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Hero Section -->
+                <section id="tab-hero" class="tab-content">
+                    <h2>Hero Section</h2>
+                    <div class="card-form">
+                        <div class="form-group">
+                            <label>Título Principal</label>
+                            <textarea id="hero-title" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Subtítulo</label>
+                            <textarea id="hero-subtitle" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Imagem de Fundo (Hero) <small style="color: var(--primary);">[Recomendado: 1920x1080px]</small></label>
+                            <div id="preview-hero" class="image-single-preview" style="height: 250px;"></div>
+                            <input type="file" id="file-hero" accept="image/*" style="display: none;" onchange="handleSingleUpload('hero')">
+                            <button class="btn-add" onclick="document.getElementById('file-hero').click()"><i class="fas fa-image"></i> Alterar Fundo do Site</button>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Texto Botão Primário</label>
+                                <input type="text" id="hero-btn1-text">
+                            </div>
+                            <div class="form-group">
+                                <label>Texto Botão Secundário</label>
+                                <input type="text" id="hero-btn2-text">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sobre Nós -->
+                <section id="tab-sobre" class="tab-content">
+                    <h2>Sobre Nós</h2>
+                    <div class="card-form">
+                        <div class="form-group">
+                            <label>Título da Seção</label>
+                            <input type="text" id="about-title">
+                        </div>
+                        <div class="form-group">
+                            <label>Parágrafo 1</label>
+                            <textarea id="about-p1" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Imagem de Fundo das Seções <small style="color: var(--primary);">[Recomendado: 1920x1080px]</small></label>
+                            <div id="preview-stats-bg" class="image-single-preview" style="height: 200px;"></div>
+                            <input type="file" id="file-stats-bg" accept="image/*" style="display: none;" onchange="handleSingleUpload('stats-bg')">
+                            <button class="btn-add" onclick="document.getElementById('file-stats-bg').click()"><i class="fas fa-image"></i> Alterar Imagem de Fundo</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Estatísticas -->
+                <section id="tab-stats" class="tab-content">
+                    <h2>Números da Rede</h2>
+                    <div class="card-form grid-2">
+                        <div class="form-group">
+                            <label>Visualizações Diárias (Ex: 45.000)</label>
+                            <input type="text" id="stat-views">
+                        </div>
+                        <div class="form-group">
+                            <label>Pontos Comerciais (Ex: 10+)</label>
+                            <input type="text" id="stat-points">
+                        </div>
+                        <div class="form-group">
+                            <label>Cidades Atendidas (Ex: 03)</label>
+                            <input type="text" id="stat-cities">
+                        </div>
+                        <div class="form-group">
+                            <label>Telas Digitais (Ex: 16)</label>
+                            <input type="text" id="stat-screens">
+                        </div>
+                    </div>
+                    
+                    <hr style="margin: 20px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.05);">
+                    <h3>Fluxo Regional (Cards)</h3>
+                    <div class="grid-2">
+                        <div class="card-form" style="background: rgba(255,255,255,0.02); padding: 15px;">
+                            <h4>Região 1</h4>
+                            <input type="text" id="f1-city" placeholder="Cidade">
+                            <input type="text" id="f1-num" placeholder="Número de Fluxo">
+                            <input type="text" id="f1-p" placeholder="Detalhe Pontos">
+                            <input type="text" id="f1-t" placeholder="Detalhe Telas">
+                        </div>
+                        <div class="card-form" style="background: rgba(255,255,255,0.02); padding: 15px;">
+                            <h4>Região 2</h4>
+                            <input type="text" id="f2-city" placeholder="Cidade">
+                            <input type="text" id="f2-num" placeholder="Número de Fluxo">
+                            <input type="text" id="f2-p" placeholder="Detalhe Pontos">
+                            <input type="text" id="f2-t" placeholder="Detalhe Telas">
+                        </div>
+                        <div class="card-form" style="background: rgba(255,255,255,0.02); padding: 15px;">
+                            <h4>Região 3</h4>
+                            <input type="text" id="f3-city" placeholder="Cidade">
+                            <input type="text" id="f3-num" placeholder="Número de Fluxo">
+                            <input type="text" id="f3-p" placeholder="Detalhe Pontos">
+                            <input type="text" id="f3-t" placeholder="Detalhe Telas">
+                        </div>
+                        <div class="card-form" style="background: rgba(255,255,255,0.02); padding: 15px;">
+                            <h4>Região 4</h4>
+                            <input type="text" id="f4-city" placeholder="Cidade">
+                            <input type="text" id="f4-num" placeholder="Número de Fluxo">
+                            <input type="text" id="f4-p" placeholder="Detalhe Extra (Expansão)">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Modelos de Contratação -->
+                <section id="tab-modelos" class="tab-content">
+                    <h2>Modelos de Contratação</h2>
+                    <p class="helper-text">Edite os três pilares de serviço da IndoorUP.</p>
+
+                    <!-- Modelo 1 -->
+                    <div class="card-form" style="margin-bottom: 30px; border-left: 5px solid var(--primary);">
+                        <h3>Modelo 1: Tela Exclusiva</h3>
+                        <div class="form-group">
+                            <label>Título do Modelo</label>
+                            <input type="text" id="m1-title">
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição</label>
+                            <textarea id="m1-desc" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Benefícios (Um por linha)</label>
+                            <textarea id="m1-features" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Imagem do Modelo <small style="color: var(--primary);">[Recomendado: 1080x1080px]</small></label>
+                            <div id="preview-m1" class="image-single-preview"></div>
+                            <input type="file" id="file-m1" accept="image/*" style="display: none;" onchange="handleSingleUpload('m1')">
+                            <button class="btn-add" onclick="document.getElementById('file-m1').click()"><i class="fas fa-image"></i> Alterar Imagem</button>
+                        </div>
+                    </div>
+
+                    <!-- Modelo 2 -->
+                    <div class="card-form" style="margin-bottom: 30px; border-left: 5px solid #ffaa00;">
+                        <h3>Modelo 2: TV Compartilhada</h3>
+                        <div class="form-group">
+                            <label>Título do Modelo</label>
+                            <input type="text" id="m2-title">
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição</label>
+                            <textarea id="m2-desc" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Benefícios (Um por linha)</label>
+                            <textarea id="m2-features" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Imagem do Modelo <small style="color: var(--primary);">[Recomendado: 1080x1080px]</small></label>
+                            <div id="preview-m2" class="image-single-preview"></div>
+                            <input type="file" id="file-m2" accept="image/*" style="display: none;" onchange="handleSingleUpload('m2')">
+                            <button class="btn-add" onclick="document.getElementById('file-m2').click()"><i class="fas fa-image"></i> Alterar Imagem</button>
+                        </div>
+                    </div>
+
+                    <!-- Modelo 3 -->
+                    <div class="card-form" style="margin-bottom: 30px; border-left: 5px solid #00ffaa;">
+                        <h3>Modelo 3: TV Corporativa</h3>
+                        <div class="form-group">
+                            <label>Título do Modelo</label>
+                            <input type="text" id="m3-title">
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição</label>
+                            <textarea id="m3-desc" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Benefícios (Um por linha)</label>
+                            <textarea id="m3-features" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Imagem do Modelo <small style="color: var(--primary);">[Recomendado: 1080x1080px]</small></label>
+                            <div id="preview-m3" class="image-single-preview"></div>
+                            <input type="file" id="file-m3" accept="image/*" style="display: none;" onchange="handleSingleUpload('m3')">
+                            <button class="btn-add" onclick="document.getElementById('file-m3').click()"><i class="fas fa-image"></i> Alterar Imagem</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Por que Investir -->
+                <section id="tab-pq-investir" class="tab-content">
+                    <h2>Seção: Por que Investir (89%)</h2>
+                    <div class="card-form">
+                        <div class="form-group">
+                            <label>Título da Seção</label>
+                            <input type="text" id="why-title">
+                        </div>
+                        <div class="form-group">
+                            <label>Número de Impacto (Ex: 89%)</label>
+                            <input type="text" id="why-stat">
+                        </div>
+                        <div class="form-group">
+                            <label>Subtítulo de Impacto</label>
+                            <input type="text" id="why-sub">
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição Conceitual</label>
+                            <textarea id="why-desc" rows="4"></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Galeria / Carrosséis -->
+                <section id="tab-galeria" class="tab-content">
+                    <h2>Galeria Dinâmica</h2>
+                    <p class="helper-text">Adicione quantas fotos desejar em cada totem. Elas alternarão automaticamente.</p>
+                    
+                    <div class="carousel-manager">
+                        <div class="card-form">
+                            <h3>Totem (Ex: Academias) <small style="color: var(--primary);">[Recomendado: 1280x720px]</small></h3>
+                            <div id="list-gal1" class="dynamic-list gallery-preview"></div>
+                            <div class="upload-controls">
+                                <input type="file" id="file-gal1" accept="image/*" style="display: none;" onchange="handleFileUpload('gal1')">
+                                <button class="btn-add" onclick="document.getElementById('file-gal1').click()"><i class="fas fa-upload"></i> Upload de Foto</button>
+                            </div>
+                        </div>
+
+                        <div class="card-form">
+                            <h3>Totem (Ex: Supermercados) <small style="color: var(--primary);">[Recomendado: 1280x720px]</small></h3>
+                            <div id="list-gal2" class="dynamic-list gallery-preview"></div>
+                            <div class="upload-controls">
+                                <input type="file" id="file-gal2" accept="image/*" style="display: none;" onchange="handleFileUpload('gal2')">
+                                <button class="btn-add" onclick="document.getElementById('file-gal2').click()"><i class="fas fa-upload"></i> Upload de Foto</button>
+                            </div>
+                        </div>
+
+                        <div class="card-form">
+                            <h3>Totem (Ex: Corporativo) <small style="color: var(--primary);">[Recomendado: 1280x720px]</small></h3>
+                            <div id="list-gal3" class="dynamic-list gallery-preview"></div>
+                            <div class="upload-controls">
+                                <input type="file" id="file-gal3" accept="image/*" style="display: none;" onchange="handleFileUpload('gal3')">
+                                <button class="btn-add" onclick="document.getElementById('file-gal3').click()"><i class="fas fa-upload"></i> Upload de Foto</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Locais da Rede -->
+                <section id="tab-rede" class="tab-content">
+                    <h2>Gestão de Estabelecimentos</h2>
+                    <div id="list-locations" class="dynamic-list-locations">
+                        <!-- Locais serão inseridos aqui -->
+                    </div>
+                    <button class="btn-add" onclick="addLocation()"><i class="fas fa-plus"></i> Adicionar Novo Local</button>
+                </section>
+
+                <!-- Planos -->
+                <section id="tab-planos" class="tab-content">
+                    <div class="section-header-admin">
+                        <h2>Gestão de Planos & Preços</h2>
+                        <button type="button" class="btn-add" onclick="addPlan()"><i class="fas fa-plus"></i> Adicionar Novo Plano</button>
+                    </div>
+                    <div id="list-plans" class="dynamic-list-plans">
+                        <!-- Os planos serão carregados dinamicamente via admin.js -->
+                    </div>
+                </section>
+
+                <!-- Contato -->
+                <section id="tab-contato" class="tab-content">
+                    <h2>Contato & Redes Sociais</h2>
+                    <div class="card-form">
+                        <div class="form-group">
+                            <label>WhatsApp (Link Direto: 5596...)</label>
+                            <input type="text" id="contact-wa">
+                        </div>
+                        <div class="form-group">
+                            <label>E-mail Exibido</label>
+                            <input type="text" id="contact-email">
+                        </div>
+                        <div class="form-group">
+                            <label>Instagram URL</label>
+                            <input type="text" id="contact-ig">
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <footer class="admin-footer">
+                <button class="btn-save" id="btn-save"><i class="fas fa-save"></i> Publicar Alterações no Site</button>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
